@@ -32,4 +32,14 @@ class SampleController extends AbstractController
             'somme' => $sum
         ]);
     }
+
+    // #[Route('/sayHello/{firstname}/{lastname}', name: 'say.hello')]
+    public function sayHello(Request $request, $firstname, $lastname): Response
+    {
+        return $this->render('sample/hello.html.twig', [
+            'prenom' => $firstname,
+            'nom' => $lastname,
+            // 'path' => 'moi.jpg'
+        ]);
+    }
 }
