@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block titreDuDocument %}
+        Titre par défaut
+        {% endblock %}
+    </title>
+</head>
+<body>
+    <header>
+        <p>Header</p>
+    </header>
+    <hr>
+        {% block corpsDuDocument %}
+            Contenu par défaut repris du template.
+        {% endblock %}
+    <hr>
+    <footer>
+        <p>Footer</p>
+    </footer>
+</body>
+</html>

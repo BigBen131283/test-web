@@ -1,0 +1,14 @@
+{% extends 'heritage.html.twig' %}
+
+{% block titreDuDocument %}
+    Le vrai titre!
+{% endblock %}
+
+{% block corpsDuDocument %}
+    {{
+        parent()
+    }}
+    <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi quisquam incidunt enim alias dolores perferendis consectetur cumque voluptas porro debitis eligendi sapiente unde, voluptatum modi voluptate fuga esse facere ipsam.
+    </p>
+{% endblock %}
