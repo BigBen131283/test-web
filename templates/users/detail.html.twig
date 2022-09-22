@@ -1,0 +1,16 @@
+{% extends "template.html.twig" %}
+
+{% block body %}
+    {{ dump(user) }}
+    <div class="alert alert-success">
+        {{ user.email }}, {{ user.age }} ans
+    </div>
+{% endblock %}
+
+{% block title %}
+    Page user
+{% endblock %}
+
+{% block PageTitle %}
+    Page de l'utilisateur : {{ user.username }}
+{% endblock %}
