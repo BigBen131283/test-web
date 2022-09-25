@@ -11,6 +11,7 @@
             <h6 class="card-subtitle mb-2 text-muted">{{ user.age}}</h6>
             <p class="card-text">Utilisateur enregistré le {{ user.createdAt|date("d/m/Y") }}</p>
             <a href="{{ path('users.detail', {id: user.id}) }}" class="card-link">Détails</a>
+            <a href="{{ path('users.delete', {id: user.id}) }}" class="card-link">Delete</a>
         </div>
     </div>
     {% endfor %}

@@ -6,6 +6,7 @@ use App\Entity\Users;
 use DateTimeImmutable;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,7 +18,33 @@ class UsersController extends AbstractController
     {
         $repository = $doctrine->getRepository(Users::class);
         $users = $repository->findAll();
-        return $this->render('users/index.html.twig', ['users' => $users]);
+        return $this->render('users/index.html.twig', [
+            'users' => $users,
+            'isPaginated' => false
+        ]);
+    }
+
+    #[Route('/all/age/{min?18}/{max?99}', name: 'users.list.age')]
+    public function usersByAge(ManagerRegistry $doctrine, $min, $max): Response
+    {
+        $repository = $doctrine->getRepository(Users::class);
+        $users = $repository->findUsersByAgeInterval($min, $max);
+        return $this->render('users/index.html.twig', [
+            'users' => $users,
+            'isPaginated' => false
+        ]);
+    }
+
+    #[Route('/stats/age/{min?18}/{max?99}', name: 'users.list.stats')]
+    public function statsUsersByAge(ManagerRegistry $doctrine, $min, $max): Response
+    {
+        $repository = $doctrine->getRepository(Users::class);
+        $stats = $repository->statUsersByAgeInterval($min, $max);
+        return $this->render('users/stats.html.twig', [
+            'stats' => $stats[0],
+            'min' => $min,
+            'max' => $max
+        ]);
     }
 
     #[Route('/all/{page?1}/{nbre?12}', name: 'users.list.all')]
@@ -72,9 +99,33 @@ class UsersController extends AbstractController
         ]);
     }
 
-    #[Route('/delete', name: 'users.delete')]
-    public function deleteUser(): Response
+    #[Route('/delete/{id}', name: 'users.delete')]
+    public function deleteUser(Users $user = null, ManagerRegistry $doctrine): RedirectResponse //param converter
     {
-        
+        if($user){
+            $manager = $doctrine->getManager();
+            $manager->remove($user);
+            $manager->flush();
+            $this->addFlash('success', "L'utilisateur a été supprimé avec succès");
+        } else{
+            $this->addFlash('error', 'Utilisateur inexistant ou déjà supprimé');
+        }
+        return $this->redirectToRoute('users.list.all');
+    }
+
+    #[Route('/update/{id}/{username}/{age}', name: 'users.update')]
+    public function updateUser(Users $user = null, ManagerRegistry $doctrine, $username, $age): RedirectResponse
+    {
+        if($user){
+            $user->setUsername($username);
+            $user->setAge($age);
+            $manager = $doctrine->getManager();
+            $manager->persist($user);
+            $manager->flush();
+            $this->addFlash('success', "L'utilisateur a été mis à jour avec succès");
+        } else{
+            $this->addFlash('error', 'Utilisateur inexistant');
+        }
+        return $this->redirectToRoute('users.list.all');
     }
 }

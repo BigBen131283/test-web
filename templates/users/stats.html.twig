@@ -1,0 +1,12 @@
+{% extends 'template.html.twig' %}
+
+{% block title %}Statistiques utilisateurs : Age moyen{% endblock %}
+
+
+{% block PageTitle %}
+    Age moyen des utilisateurs agés entre {{ min }} et {{ max }} ans :
+{% endblock %}
+
+{% block body %}
+    <h2>{{ stats.averageAge | number_format(0) }} ans pour un total de {{ stats.numberOfUsers }} utilisateurs</h2>
+{% endblock %}
