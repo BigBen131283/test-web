@@ -81,7 +81,7 @@ class UsersController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
 
-        $timestamp = new DateTimeImmutable();
+        // $timestamp = new DateTimeImmutable();
 
         $user = new Users();
         $user->setUsername('Ben');
@@ -89,7 +89,6 @@ class UsersController extends AbstractController
         $user->setPassword('123456');
         $user->setRole('10');
         $user->setAge('25');
-        $user->setCreatedAt($timestamp);
 
         $entityManager->persist($user);
         $entityManager->flush();

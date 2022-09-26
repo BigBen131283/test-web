@@ -3,10 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 class Users
 {
     #[ORM\Id]
@@ -31,6 +35,23 @@ class Users
 
     #[ORM\Column]
     private ?int $age = null;
+
+    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Profile $profile = null;
+
+    #[ORM\ManyToMany(targetEntity: Hobby::class)]
+    private Collection $hobbies;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Job $job = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    public function __construct()
+    {
+        $this->hobbies = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,5 +128,78 @@ class Users
         $this->age = $age;
 
         return $this;
+    }
+
+    public function getProfile(): ?profile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?profile $profile): self
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, hobby>
+     */
+    public function getHobbies(): Collection
+    {
+        return $this->hobbies;
+    }
+
+    public function addHobby(hobby $hobby): self
+    {
+        if (!$this->hobbies->contains($hobby)) {
+            $this->hobbies->add($hobby);
+        }
+
+        return $this;
+    }
+
+    public function removeHobby(hobby $hobby): self
+    {
+        $this->hobbies->removeElement($hobby);
+
+        return $this;
+    }
+
+    public function getJob(): ?job
+    {
+        return $this->job;
+    }
+
+    public function setJob(?job $job): self
+    {
+        $this->job = $job;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+        
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist()
+    {
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate()
+    {
+        $this->updatedAt = new DateTime();
     }
 }
