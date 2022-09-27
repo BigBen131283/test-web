@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Users;
-use DateTimeImmutable;
+use App\Form\UsersType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -81,20 +81,13 @@ class UsersController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
 
-        // $timestamp = new DateTimeImmutable();
-
-        $user = new Users();
-        $user->setUsername('Ben');
-        $user->setEmail('tono@saucisson.fr');
-        $user->setPassword('123456');
-        $user->setRole('10');
-        $user->setAge('25');
-
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $user = new Users;
+        $form = $this->createForm(UsersType::class, $user);
+        $form->remove('createdAt');
+        $form->remove('updatedAt');
         
-        return $this->render('users/detail.html.twig', [
-            'user' => $user,
+        return $this->render('users/add-user.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
