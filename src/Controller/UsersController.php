@@ -7,6 +7,7 @@ use App\Form\UsersType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -77,7 +78,7 @@ class UsersController extends AbstractController
     }
     
     #[Route('/add', name: 'users.add')]
-    public function addUser(ManagerRegistry $doctrine): Response
+    public function addUser(ManagerRegistry $doctrine, Request $request): Response
     {
         $entityManager = $doctrine->getManager();
 
@@ -85,7 +86,10 @@ class UsersController extends AbstractController
         $form = $this->createForm(UsersType::class, $user);
         $form->remove('createdAt');
         $form->remove('updatedAt');
-        
+        $form->remove('role');
+
+        dump($request);
+
         return $this->render('users/add-user.html.twig', [
             'form' => $form->createView()
         ]);

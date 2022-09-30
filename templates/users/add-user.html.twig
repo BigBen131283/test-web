@@ -3,7 +3,9 @@
 {% block body %}
     {{ form_start(form) }}
     <div class="row">
-        <div class="col">{{ form_row(form.username) }}</div>
+        <div class="col">{{ form_label(form.username, "je suis le label") }}</div>
+        <div class="col">{{ form_widget(form.username, {'attr': {'class': 'benjamin'}}) }}</div>
+        
         <div class="col">{{ form_row(form.password) }}</div>
     </div>
     {{ form_rest(form) }}
