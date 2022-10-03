@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Hobby;
+use App\Entity\Job;
 use App\Entity\Profile;
 use App\Entity\Users;
 use Doctrine\ORM\EntityRepository;
@@ -27,21 +28,35 @@ class UsersType extends AbstractType
             ->add('createdAt')
             ->add('updatedAt')
             ->add('profile', EntityType::class, [
-                'expanded' => true,
+                'expanded' => false,
+                'required' => false,
                 'multiple' => false,
-                'class' => Profile::class
+                'class' => Profile::class,
+                'attr' => [
+                    'class' => 'select2'
+                ]
             ])
             ->add('hobbies', EntityType::class, [
                 'expanded' => false,
                 'multiple' => true,
+                'required' => false,
                 'class' => Hobby::class,
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('h')
                         ->orderBy('h.designation', 'ASC');
                 },
-                // 'choice_label' => 'designation'
+                // 'choice_label' => 'designation',
+                'attr' => [
+                    'class' => 'select2'
+                ]
             ])
-            ->add('job')
+            ->add('job', EntityType::class, [
+                'required' => false,
+                'class' => Job::class,
+                'attr' => [
+                    'class' => 'select2'
+                ]
+            ])
             ->add('photo', FileType::class, [
                 'label' => 'Votre photo de profil',
 

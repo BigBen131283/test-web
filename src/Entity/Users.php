@@ -7,6 +7,7 @@ use App\Traits\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -20,6 +21,8 @@ class Users
     private ?int $id = null;
 
     #[ORM\Column(length: 45)]
+    #[Assert\NotBlank(message:"Veuillez renseigner ce champ")]
+    #[Assert\Length(min:4, minMessage:"Ce champ doit contenir au moins 4 caractères")]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]

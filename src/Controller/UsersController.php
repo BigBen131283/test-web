@@ -95,7 +95,7 @@ class UsersController extends AbstractController
         //Mon formulaire va traiter la requête (ci-dessous)
         $form->handleRequest($request);
 
-        if($form->isSubmitted())
+        if($form->isSubmitted() && $form->isValid())
         {
             $photo = $form->get('photo')->getData();
 

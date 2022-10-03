@@ -12,9 +12,9 @@
             <h5 class="card-title">{{ user.username }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ user.age}}</h6>
             <p class="card-text">Utilisateur enregistré le {{ user.createdAt|date("d/m/Y") }}</p>
-            <a href="{{ path('users.detail', {id: user.id}) }}" class="card-link">Détails</a>
-            <a href="{{ path('users.delete', {id: user.id}) }}" class="card-link">Delete</a>
-            <a href="{{ path('users.edit', {id: user.id}) }}" class="card-link">Mettre à jour</a>
+            <a href="{{ path('users.detail', {id: user.id}) }}" class="card-link"><i class="fa-solid fa-circle-info"></i></a>
+            <a href="{{ path('users.delete', {id: user.id}) }}" class="card-link"><i class="fa-solid fa-user-xmark"></i></a>
+            <a href="{{ path('users.edit', {id: user.id}) }}" class="card-link"><i class="fa-solid fa-user-pen"></i></a>
         </div>
     </div>
     {% endfor %}
