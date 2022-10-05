@@ -4,18 +4,33 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\UsersType;
+use App\Service\Helpers;
+use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
+// use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('users')]
 class UsersController extends AbstractController
 {
+    
+    public function __construct(
+        // private LoggerInterface $logger, 
+        private Helpers $helper) {}
+
+    // Ci-dessus revient à faire : 
+    // private $logger;
+    // public function __construct(LoggerInterface $logger)
+    // {
+    //     $this->logger = $logger;
+    // }
+    // disponible à partir de la v8 de PHP
+
     #[Route('/', name: 'users.list')]
     public function index(ManagerRegistry $doctrine): Response
     {
@@ -53,6 +68,8 @@ class UsersController extends AbstractController
     #[Route('/all/{page?1}/{nbre?12}', name: 'users.list.all')]
     public function indexAll(ManagerRegistry $doctrine, $page, $nbre): Response
     {
+        echo($this->helper->sayCc());
+        
         $repository = $doctrine->getRepository(Users::class);
         $nbUsers = $repository->count([]);
         $nbPages = ceil($nbUsers / $nbre);
@@ -80,7 +97,12 @@ class UsersController extends AbstractController
     }
     
     #[Route('/edit/{id?=0}', name: 'users.edit')]
-    public function addUser(Users $user = null, ManagerRegistry $doctrine, Request $request, SluggerInterface $slugger): Response
+    public function addUser(
+        Users $user = null, 
+        ManagerRegistry $doctrine, 
+        Request $request,
+        UploaderService $uploaderService
+        ): Response
     {
         $new = false;
         if(!$user)        
@@ -102,24 +124,11 @@ class UsersController extends AbstractController
             // this condition is needed because the 'image' field is not required
             // so the image must be processed only when a file is uploaded
             if ($photo) {
-                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                // this is needed to safely include the file name as part of the URL
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$photo->guessExtension();
-
-                // Move the file to the directory where brochures are stored
-                try {
-                    $photo->move(
-                        $this->getParameter('user_image_directory'),
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    // ... handle exception if something happens during file upload
-                }
+                $directory = $this->getParameter('user_image_directory');
 
                 // updates the 'brochureFilename' property to store the PDF file name
                 // instead of its contents
-                $user->setImage($newFilename);
+                $user->setImage($uploaderService->uploadFile($photo, $directory));
             }
             $entityManager = $doctrine->getManager();
 
