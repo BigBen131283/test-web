@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\UsersType;
 use App\Service\Helpers;
+use App\Service\MailerService;
 use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
 // use Psr\Log\LoggerInterface;
@@ -101,7 +102,8 @@ class UsersController extends AbstractController
         Users $user = null, 
         ManagerRegistry $doctrine, 
         Request $request,
-        UploaderService $uploaderService
+        UploaderService $uploaderService,
+        // MailerService $mailerService
         ): Response
     {
         $new = false;
@@ -137,11 +139,13 @@ class UsersController extends AbstractController
 
             if($new)
             {
-                $message = " a été créé avec succès";    
+                $message = " a été créé avec succès";
             }else{
                 $message = " a été mis à jour avec succès";
             }
+            $mailMessage = $user->getUsername().' '.$message;    
             $this->addFlash('success', $user->getUsername(). $message);
+            // $mailerService->sendEmail(content: $mailMessage);
             return $this->redirectToRoute('users.list.all');
         }else{
             return $this->render('users/add-user.html.twig', [
