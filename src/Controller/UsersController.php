@@ -6,6 +6,7 @@ use App\Entity\Users;
 use App\Form\UsersType;
 use App\Service\Helpers;
 use App\Service\MailerService;
+use App\Service\PdfService;
 use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
 // use Psr\Log\LoggerInterface;
@@ -41,6 +42,13 @@ class UsersController extends AbstractController
             'users' => $users,
             'isPaginated' => false
         ]);
+    }
+
+    #[Route('/pdf/{id}', name: 'user.pdf')]
+    public function generatePdfUser(Users $user = null, PdfService $pdf)
+    {
+        $html = $this->render('users/detail.html.twig', ['user' => $user]);
+        $pdf->showPdfFile($html);
     }
 
     #[Route('/all/age/{min?18}/{max?99}', name: 'users.list.age')]
