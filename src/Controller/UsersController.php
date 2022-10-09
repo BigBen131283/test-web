@@ -10,6 +10,7 @@ use App\Service\MailerService;
 use App\Service\PdfService;
 use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 // use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -17,8 +18,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Role\Role;
 
-#[Route('users')]
+#[
+    Route('users'),
+    IsGranted('ROLE_USER')
+]
 class UsersController extends AbstractController
 {
     
@@ -75,7 +80,10 @@ class UsersController extends AbstractController
         ]);
     }
 
-    #[Route('/all/{page?1}/{nbre?12}', name: 'users.list.all')]
+    #[
+        Route('/all/{page?1}/{nbre?12}', name: 'users.list.all'),
+        IsGranted("ROLE_USER")    
+    ]
     public function indexAll(ManagerRegistry $doctrine, $page, $nbre): Response
     {
         echo($this->helper->sayCc());
@@ -115,6 +123,7 @@ class UsersController extends AbstractController
         // MailerService $mailerService
         ): Response
     {
+        $this->denyAccessUnlessGranted(attribute:'ROLE_ADMIN');
         $new = false;
         if(!$user)        
         {
@@ -167,7 +176,10 @@ class UsersController extends AbstractController
         }
     }
 
-    #[Route('/delete/{id}', name: 'users.delete')]
+    #[
+        Route('/delete/{id}', name: 'users.delete'),
+        IsGranted('ROLE_ADMIN')
+    ]
     public function deleteUser(Users $user = null, ManagerRegistry $doctrine): RedirectResponse //param converter
     {
         if($user){
