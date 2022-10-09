@@ -30,4 +30,10 @@ class UsersFixtures extends Fixture
 
         $manager->flush();
     }
+
+    public static function getGroups(): array
+    {
+        //TODO: implement getGroups() method.
+        return ['users'];
+    }
 }
