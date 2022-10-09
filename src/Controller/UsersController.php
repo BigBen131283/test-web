@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Users;
+use App\Entity\User;
 use App\Form\UsersType;
 use App\Service\Helpers;
 use App\Service\MailerService;
@@ -140,17 +141,21 @@ class UsersController extends AbstractController
                 // instead of its contents
                 $user->setImage($uploaderService->uploadFile($photo, $directory));
             }
+            
+            if($new)
+            {
+                $message = " a été créé avec succès";
+                $user->setCreatedBy($this->getUser());
+            }else{
+                $message = " a été mis à jour avec succès";
+            }
+            
             $entityManager = $doctrine->getManager();
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            if($new)
-            {
-                $message = " a été créé avec succès";
-            }else{
-                $message = " a été mis à jour avec succès";
-            }
+
             $mailMessage = $user->getUsername().' '.$message;    
             $this->addFlash('success', $user->getUsername(). $message);
             // $mailerService->sendEmail(content: $mailMessage);
