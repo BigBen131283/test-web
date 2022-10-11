@@ -4,15 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Entity\User;
+use App\Events\AddUserEvent;
+use App\Events\ListAllUserEvent;
 use App\Form\UsersType;
 use App\Service\Helpers;
 use App\Service\MailerService;
 use App\Service\PdfService;
 use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 // use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,8 +32,10 @@ class UsersController extends AbstractController
 {
     
     public function __construct(
-        // private LoggerInterface $logger, 
-        private Helpers $helper) {}
+        private LoggerInterface $logger, 
+        private Helpers $helper,
+        private EventDispatcherInterface $dispatcher
+        ) {}
 
     // Ci-dessus revient à faire : 
     // private $logger;
@@ -93,6 +99,10 @@ class UsersController extends AbstractController
         $nbPages = ceil($nbUsers / $nbre);
         
         $users = $repository->findBy([], ['age' => 'ASC'], $nbre, offset: ($page - 1) * $nbre);
+
+        $listAllUserEvent = new ListAllUserEvent($nbUsers);
+        $this->dispatcher->dispatch($listAllUserEvent, ListAllUserEvent::LIST_ALL_USERS_EVENT);
+
         return $this->render('users/index.html.twig', [
             'users' => $users,
             'isPaginated' => true,
@@ -164,6 +174,11 @@ class UsersController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            if($new)
+            {
+                $addUserEvent = new AddUserEvent($user);
+                $this->dispatcher->dispatch($addUserEvent, AddUserEvent::ADD_USER_EVENT);
+            }
 
             $mailMessage = $user->getUsername().' '.$message;    
             $this->addFlash('success', $user->getUsername(). $message);
