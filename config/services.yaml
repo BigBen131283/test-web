@@ -22,6 +22,12 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\EventListener\UsersListener:
+        tags:
+            - { name: kernel.event_listener, event: user.add, method: onAddUserListener}
+            # - { name: kernel.event_listener, event: kernel.request, method: logKernelRequest, priority: -5000 }
+            - { name: kernel.event_listener, event: users.list.all, method: onListAllUsers, priority: 100}
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
