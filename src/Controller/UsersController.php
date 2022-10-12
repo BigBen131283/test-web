@@ -180,9 +180,8 @@ class UsersController extends AbstractController
                 $this->dispatcher->dispatch($addUserEvent, AddUserEvent::ADD_USER_EVENT);
             }
 
-            $mailMessage = $user->getUsername().' '.$message;    
             $this->addFlash('success', $user->getUsername(). $message);
-            // $mailerService->sendEmail(content: $mailMessage);
+
             return $this->redirectToRoute('users.list.all');
         }else{
             return $this->render('users/add-user.html.twig', [
